@@ -46,21 +46,35 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      Content
+      <pre>
+        {{ ebooks }}
+        {{ ebooks2 }}
+      </pre>
     </a-layout-content>
   </a-layout>
 </template>
 
 <script>
 import axios from 'axios';
+import {reactive, ref, toRef} from "vue";
 
 export default {
   name: 'Home',
   setup() {
     console.log("setup");
+    const ebooks = ref();
+    const ebooks1 = reactive({books: []});
     axios.get("http://localhost:8888/ebook/list?name=Vue").then(response => {
       console.log(response);
-    })
+      const data = response.data;
+      ebooks.value = data.content;
+      ebooks1.books = data.content;
+    });
+
+    return {
+      ebooks,
+      ebooks2: toRef(ebooks1, "books")
+    }
   }
 }
 </script>
