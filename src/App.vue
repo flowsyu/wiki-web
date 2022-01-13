@@ -2,19 +2,19 @@
   <a-layout>
     <the-header></the-header>
     <router-view/>
-    <a-layout-footer style="text-align: center">
-      wiki知识库
-    </a-layout-footer>
+    <the-footer/>
   </a-layout>
 </template>
 
 <script>
 import TheHeader from '@/components/the-header.vue';
+import TheFooter from "@/components/the-footer";
 
 export default ({
   name: 'app',
   components: {
     TheHeader,
+    TheFooter,
   },
 });
 </script>
