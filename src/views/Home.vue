@@ -80,7 +80,7 @@ export default {
   setup() {
     console.log("setup");
     const ebooks = ref();
-    axios.get(process.env.VUE_APP_SERVER + "/ebook/list").then(response => {
+    axios.get("/ebook/list").then(response => {
       console.log(response);
       const data = response.data;
       ebooks.value = data.content;
