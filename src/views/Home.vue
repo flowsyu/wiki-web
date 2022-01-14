@@ -46,7 +46,7 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-list item-layout="vertical" size="large" :grid="{gutter:20,column:3}" :pagination="pagination"
+      <a-list item-layout="vertical" size="large" :grid="{gutter:20,column:3}"
               :data-source="ebooks">
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
@@ -73,17 +73,18 @@
 
 <script>
 import axios from 'axios';
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 export default {
   name: 'Home',
   setup() {
-    console.log("setup");
     const ebooks = ref();
-    axios.get("/ebook/list").then(response => {
-      console.log(response);
-      const data = response.data;
-      ebooks.value = data.content;
+
+    onMounted(() => {
+      axios.get("/ebook/list").then(response => {
+        const data = response.data;
+        ebooks.value = data.content;
+      });
     });
 
     return {
