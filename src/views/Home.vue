@@ -80,7 +80,7 @@ export default {
   setup() {
     console.log("setup");
     const ebooks = ref();
-    axios.get("http://localhost:8888/ebook/list?name=Vue").then(response => {
+    axios.get("http://localhost:8888/ebook/list").then(response => {
       console.log(response);
       const data = response.data;
       ebooks.value = data.content;
@@ -106,3 +106,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.ant-avatar {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 8%;
+  margin: 5px 0;
+}
+</style>
