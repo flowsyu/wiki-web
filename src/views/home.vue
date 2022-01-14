@@ -81,9 +81,14 @@ export default {
     const ebooks = ref();
 
     onMounted(() => {
-      axios.get("/ebook/list").then(response => {
+      axios.get("/ebook/list", {
+        params: {
+          page: 1,
+          size: 1000,
+        }
+      }).then(response => {
         const data = response.data;
-        ebooks.value = data.content;
+        ebooks.value = data.content.list;
       });
     });
 
