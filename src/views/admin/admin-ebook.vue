@@ -81,6 +81,7 @@
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import {message} from "ant-design-vue";
+import {Tool} from "@/utils/tool";
 
 export default {
   name: "AdminEbook",
@@ -201,8 +202,7 @@ export default {
      */
     const edit = (record) => {
       modalVisible.value = true;
-      console.log(record);
-      ebook.value = record;
+      ebook.value = Tool.copy(record);
     }
 
     /**
