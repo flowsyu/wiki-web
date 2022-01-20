@@ -19,7 +19,7 @@
     <a-table
         :columns="columns"
         :row-key="record => record.id"
-        :data-source="categorys"
+        :data-source="level1"
         :pagination="false"
         :loading="loading"
     >
@@ -53,20 +53,14 @@
       @ok="handleModalOk"
   >
     <a-form :model="category" :label-col="{span: 6}" :wrapper-col="{span: 18}">
-      <a-form-item label="封面">
-        <a-input v-model:value="category.cover"/>
-      </a-form-item>
       <a-form-item label="名称">
         <a-input v-model:value="category.name"/>
       </a-form-item>
-      <a-form-item label="分类一">
-        <a-input v-model:value="category.category1Id"/>
+      <a-form-item label="父分类 ">
+        <a-input v-model:value="category.parent"/>
       </a-form-item>
-      <a-form-item label="分类二">
-        <a-input v-model:value="category.category2Id"/>
-      </a-form-item>
-      <a-form-item label="描述">
-        <a-input v-model:value="category.description" type="textarea"/>
+      <a-form-item label="顺序">
+        <a-input v-model:value="category.sort"/>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -88,34 +82,17 @@ export default {
     const loading = ref(false);
     const columns = [
       {
-        title: '封面',
-        dataIndex: 'cover',
-        slots: {customRender: 'cover'}
-      },
-      {
         title: '名称',
         dataIndex: 'name'
       },
       {
-        title: '分类一',
-        key: 'category1Id',
-        dataIndex: 'category1Id'
+        title: '父分类',
+        key: 'parent',
+        dataIndex: 'parent'
       },
       {
-        title: '分类二',
-        dataIndex: 'category2Id'
-      },
-      {
-        title: '文档数',
-        dataIndex: 'docCount'
-      },
-      {
-        title: '阅读数',
-        dataIndex: 'viewCount'
-      },
-      {
-        title: '点赞数',
-        dataIndex: 'voteCount'
+        title: '顺序',
+        dataIndex: 'sort'
       },
       {
         title: 'Action',
@@ -123,6 +100,18 @@ export default {
         slots: {customRender: 'action'}
       }
     ];
+    /**
+     * 一级分类树，children属性就是二级分类
+     * [{
+     *   id: "",
+     *   name: "",
+     *   children: [{
+     *     id: "",
+     *     name: "",
+     *   }]
+     * }]
+     */
+    const level1 = ref(); // 一级分类树，children属性就是二级分类
 
     /**
      * 数据查询
@@ -136,6 +125,11 @@ export default {
 
         if (data.success) {
           categorys.value = data.content;
+          console.log("原是数组：", categorys.value);
+
+          level1.value = [];
+          level1.value = Tool.array2Tree(categorys.value, 0);
+          console.log("树形结构：", level1);
         } else {
           message.error(data.message);
         }
@@ -198,7 +192,7 @@ export default {
     });
 
     return {
-      categorys,
+      level1,
       columns,
       loading,
       modalVisible,
