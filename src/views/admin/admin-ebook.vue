@@ -65,10 +65,11 @@
         <a-input v-model:value="ebook.name"/>
       </a-form-item>
       <a-form-item label="分类一">
-        <a-input v-model:value="ebook.category1Id"/>
-      </a-form-item>
-      <a-form-item label="分类二">
-        <a-input v-model:value="ebook.category2Id"/>
+        <a-cascader
+            v-model:value="categoryIds"
+            :field-names="{ label: 'name', value: 'id', children: 'children' }"
+            :options="level1"
+        />
       </a-form-item>
       <a-form-item label="描述">
         <a-input v-model:value="ebook.description" type="textarea"/>
@@ -176,11 +177,15 @@ export default {
     /**
      * 表单
      */
-    let ebook = ref({});
+    const categoryIds = ref();
+    let ebook = ref();
     let modalVisible = ref(false);
     let modalLoading = ref(false);
     const handleModalOk = () => {
       modalLoading.value = true;
+      ebook.value.categorie1Id = categoryIds.value[0];
+      ebook.value.categorie2Id = categoryIds.value[1];
+
       axios.post("/ebook/save", ebook.value).then(response => {
         modalLoading.value = false;
         const data = response.data;// data = commonResp
@@ -203,6 +208,7 @@ export default {
     const edit = (record) => {
       modalVisible.value = true;
       ebook.value = Tool.copy(record);
+      categoryIds.value = [ebook.value.categorie1Id, ebook.value.categorie2Id];
     }
 
     /**
@@ -229,8 +235,30 @@ export default {
       });
     }
 
+    /**
+     * 查询所有分类
+     */
+    const level1 = ref();
+    const handleQueryCategory = () => {
+      loading.value = true;
+      axios.get("/category/all").then((response) => {
+        loading.value = false;
+        const data = response.data;
+        if (data.success) {
+          const categorys = data.content;
+          console.log("原始数组：", categorys);
+
+          level1.value = [];
+          level1.value = Tool.array2Tree(categorys, 0);
+          console.log("树形结构：", level1.value);
+        } else {
+          message.error(data.message);
+        }
+      });
+    }
 
     onMounted(() => {
+      handleQueryCategory();
       handleQuery({
         page: 1,
         size: pagination.value.pageSize,
@@ -251,7 +279,9 @@ export default {
       add,
       handleDelete,
       param,
-      handleQuery
+      handleQuery,
+      categoryIds,
+      level1
     }
   }
 }

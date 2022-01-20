@@ -41,9 +41,9 @@ export class Tool {
             if (Number(c.parent) === Number(parentId)) {
                 res.push(c);
 
-                const child = Tool.array2Tree(array, c.id);
-                if (Tool.isNotEmpty(child)) {
-                    c.child = child;
+                const children = Tool.array2Tree(array, c.id);
+                if (Tool.isNotEmpty(children)) {
+                    c.children = children;
                 }
             }
         }
