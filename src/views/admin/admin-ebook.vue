@@ -31,6 +31,9 @@
       <template #cover="{ text: cover }">
         <img v-if="cover" :src="cover" alt="avatar"/>
       </template>
+      <template v-slot:category="{ record }">
+        <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
+      </template>
       <template v-slot:action="{record}">
         <a-space size="small">
           <a-button type="primary" @click="edit(record)">
@@ -64,7 +67,7 @@
       <a-form-item label="名称">
         <a-input v-model:value="ebook.name"/>
       </a-form-item>
-      <a-form-item label="分类一">
+      <a-form-item label="分类">
         <a-cascader
             v-model:value="categoryIds"
             :field-names="{ label: 'name', value: 'id', children: 'children' }"
@@ -108,13 +111,8 @@ export default {
         dataIndex: 'name'
       },
       {
-        title: '分类一',
-        key: 'category1Id',
-        dataIndex: 'category1Id'
-      },
-      {
-        title: '分类二',
-        dataIndex: 'category2Id'
+        title: '分类',
+        slots: {customRender: 'category'}
       },
       {
         title: '文档数',
@@ -140,6 +138,8 @@ export default {
      **/
     const handleQuery = (params) => {
       loading.value = true;
+      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+      ebooks.value = [];
       axios.get("/ebook/list", {
         params: {
           page: params.page,
@@ -183,8 +183,8 @@ export default {
     let modalLoading = ref(false);
     const handleModalOk = () => {
       modalLoading.value = true;
-      ebook.value.categorie1Id = categoryIds.value[0];
-      ebook.value.categorie2Id = categoryIds.value[1];
+      ebook.value.category1Id = categoryIds.value[0];
+      ebook.value.category2Id = categoryIds.value[1];
 
       axios.post("/ebook/save", ebook.value).then(response => {
         modalLoading.value = false;
@@ -208,7 +208,7 @@ export default {
     const edit = (record) => {
       modalVisible.value = true;
       ebook.value = Tool.copy(record);
-      categoryIds.value = [ebook.value.categorie1Id, ebook.value.categorie2Id];
+      categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id];
     }
 
     /**
@@ -238,6 +238,7 @@ export default {
     /**
      * 查询所有分类
      */
+    let categorys;
     const level1 = ref();
     const handleQueryCategory = () => {
       loading.value = true;
@@ -245,7 +246,7 @@ export default {
         loading.value = false;
         const data = response.data;
         if (data.success) {
-          const categorys = data.content;
+          categorys = data.content;
           console.log("原始数组：", categorys);
 
           level1.value = [];
@@ -256,6 +257,18 @@ export default {
         }
       });
     }
+
+    const getCategoryName = (cid) => {
+      // console.log(cid)
+      let result;
+      categorys.forEach((item) => {
+        if (item.id === cid) {
+          // return item.name; // 注意，这里直接return不起作用
+          result = item.name;
+        }
+      });
+      return result;
+    };
 
     onMounted(() => {
       handleQueryCategory();
@@ -281,7 +294,8 @@ export default {
       param,
       handleQuery,
       categoryIds,
-      level1
+      level1,
+      getCategoryName
     }
   }
 }
