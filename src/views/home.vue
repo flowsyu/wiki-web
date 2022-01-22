@@ -86,21 +86,34 @@ export default {
     };
 
     const isShowWelcome = ref(true);
-    const handleClick = (value) => {
-      isShowWelcome.value = value.key === 'welcome';
-    }
+    let categoryId2 = 0;
 
-    onMounted(() => {
-      handleQueryCategory();
+    const handleQueryEbook = () => {
       axios.get("/ebook/list", {
         params: {
           page: 1,
           size: 1000,
+          categoryId2: categoryId2,
         }
       }).then(response => {
         const data = response.data;
         ebooks.value = data.content.list;
       });
+    }
+
+
+    const handleClick = (value) => {
+      if (value.key === 'welcome') {
+        isShowWelcome.value = true;
+      } else {
+        categoryId2 = value.key;
+        isShowWelcome.value = false;
+        handleQueryEbook();
+      }
+    }
+
+    onMounted(() => {
+      handleQueryCategory();
     });
 
     return {
