@@ -3,6 +3,7 @@ import Home from '../views/home.vue'
 import About from '@/views/about'
 import AdminEbook from "@/views/admin/admin-ebook";
 import AdminCategory from "@/views/admin/admin-category";
+import AdminDoc from "@/views/admin/admin-doc";
 
 const routes = [
     {
@@ -24,8 +25,12 @@ const routes = [
         path: '/admin/category',
         name: 'AdminCategory',
         component: AdminCategory
-
-    }
+    },
+    {
+        path: '/admin/doc',
+        name: 'AdminDoc',
+        component: AdminDoc
+    },
 ]
 
 const router = createRouter({
