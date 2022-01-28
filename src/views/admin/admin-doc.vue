@@ -212,6 +212,33 @@ export default {
       }
     };
 
+
+    const ids = [];
+    // 查找整根树枝
+    const getDeleteIds = (treeSelectData, id) => {
+      // 遍历数组，即遍历某一层节点
+      for (let i = 0; i < treeSelectData.length; i++) {
+        const node = treeSelectData[i];
+        if (node.id === id) {
+          console.log("delete", node);
+
+          ids.push(id);
+          // 遍历所有子节点
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              getDeleteIds(children, children[j].id);
+            }
+          }
+        } else {
+          const children = node.children;
+          if (Tool.isNotEmpty(children)) {
+            getDeleteIds(children, id);
+          }
+        }
+      }
+    }
+
     /**
      * 编辑
      */
@@ -243,7 +270,9 @@ export default {
     };
 
     const handleDelete = (id) => {
-      axios.delete("/doc/delete/" + id).then((response) => {
+      getDeleteIds(level1.value, id);
+
+      axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
         const data = response.data; // data = commonResp
         if (data.success) {
           // 重新加载列表
